@@ -9,10 +9,9 @@ import { AlertTriangle, Clock, CheckCircle, XCircle, LogOut } from 'lucide-react
 import { Question, getProfile, ProfileData } from '@/lib/api'
 import QuestionContent from '@/components/QuestionContent'
 import { SolutionDialog } from '@/components/SolutionDialog'
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 
 interface QuestionResponse extends Question {
-  q_type: number
   solution: string;
   solution_image: string | null;
 }
@@ -176,9 +175,11 @@ export default function QuestionPageClient({ id }: { id: string }) {
   const handleSelectAnswer = useCallback((answer: string) => {
     setSelectedAnswer(answer)
   }, [])
-  useCallback(() => {
+
+  const handleNext = useCallback(() => {
     router.push(`/questions/${parseInt(id) + 1}`)
-  }, [router, id]);
+  }, [router, id])
+
   const { totalCorrect, totalIncorrect } = useMemo(() => {
     if (!profileData) return { totalCorrect: 0, totalIncorrect: 0 };
     const totalCorrect = profileData.stats.easy.correct + profileData.stats.medium.correct + profileData.stats.hard.correct;
@@ -278,7 +279,7 @@ export default function QuestionPageClient({ id }: { id: string }) {
             <Button
               variant="outline"
               className="w-full text-[#041E3A]"
-              onClick={() => router.push(`/questions/${parseInt(id) + 1}`)}
+              onClick={handleNext}
               disabled={isLoading || isSubmitting}
             >
               Next
