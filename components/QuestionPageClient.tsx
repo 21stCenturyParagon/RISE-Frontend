@@ -12,8 +12,15 @@ import { SolutionDialog } from '@/components/SolutionDialog'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 
 interface QuestionResponse extends Question {
+  q_type: number;
   solution: string;
   solution_image: string | null;
+  options: string;
+  correct_answer: string;
+  ques_number: number;
+  difficulty: string;
+  topic: string;
+  source: string;
 }
 
 async function getQuestion(id: string): Promise<QuestionResponse> {
@@ -212,6 +219,7 @@ export default function QuestionPageClient({ id }: { id: string }) {
       </div>
     );
   }
+
 
   return (
     <div className="min-h-screen bg-white flex">

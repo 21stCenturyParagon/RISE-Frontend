@@ -12,6 +12,7 @@ export function useMathJax() {
 
     useEffect(() => {
       if (window.MathJax) {
+        // @ts-ignore
         mathJaxRef.current = window.MathJax
         setMathJaxLoaded(true)
       } else {
@@ -39,6 +40,7 @@ export function useMathJax() {
               scale: 100
             }
           })
+          // @ts-ignore
           mathJaxRef.current = window.MathJax
           setMathJaxLoaded(true)
         }
@@ -49,8 +51,10 @@ export function useMathJax() {
     const typeset = (element?: HTMLElement) => {
       if (mathJaxLoaded && mathJaxRef.current) {
         if (element) {
+          // @ts-ignore
           mathJaxRef.current.Hub.Queue(['Typeset', mathJaxRef.current.Hub, element])
         } else {
+          // @ts-ignore
           mathJaxRef.current.Hub.Queue(['Typeset', mathJaxRef.current.Hub])
         }
       }

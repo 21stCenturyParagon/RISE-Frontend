@@ -8,12 +8,13 @@ import { Question } from '@/lib/api'
 import QuestionOption from './QuestionOption'
 
 interface QuestionContentProps {
-  question: Question
-  selectedAnswer: string
-  onSelectAnswer: (answer: string) => void
-  submittedAnswer: string | null
-  isAnswerCorrect: boolean | null
-  isSubmitting: boolean
+  question: Question;
+  parsedOptions: string[];
+  selectedAnswer: string;
+  onSelectAnswer: (answer: string) => void;
+  submittedAnswer: string | null;
+  isAnswerCorrect: boolean | null;
+  isSubmitting: boolean;
 }
 
 const QuestionContent: React.FC<QuestionContentProps> = React.memo(({
