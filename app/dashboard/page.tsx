@@ -75,6 +75,7 @@ export default function DashboardPage() {
           next_page: questionsData.next_page,
           previous_page: questionsData.previous_page,
         })
+        // @ts-ignore
         setProfile(profileData)
         setFilters(filtersData)
       } catch (error) {
