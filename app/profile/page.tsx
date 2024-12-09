@@ -288,8 +288,8 @@ export default function ProfilePage() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
               <div className="flex items-center space-x-6 mb-4 md:mb-0">
                 <Image
-                  src="https://framerusercontent.com/images/q2DtVdC1E9IpHsCozasAYSAAlY.png"
-                  alt="RISE Logo"
+                  src="https://wallpapers.com/images/hd/placeholder-profile-icon-20tehfawxt5eihco.jpg"
+                  alt="Profile image placeholder"
                   width={120}
                   height={40}
                   className="cursor-pointer"

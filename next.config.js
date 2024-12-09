@@ -6,6 +6,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'framerusercontent.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'wallpapers.com',
+      },
     ],
   }
 };
