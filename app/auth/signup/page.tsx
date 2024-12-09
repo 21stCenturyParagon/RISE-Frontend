@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { signupUser } from '@/lib/api'
+import VerificationMessage from '@/components/VerificationMessage'
 
 export default function SignupPage() {
   const [name, setName] = useState('')
@@ -15,17 +16,18 @@ export default function SignupPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [showVerification, setShowVerification] = useState(false)
   const router = useRouter()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setIsLoading(true)
     try {
-      const data = await signupUser(email, password, name)
-      localStorage.setItem('token', data.token)
-      router.push('/dashboard')
+      await signupUser(email, password, name)
+      setShowVerification(true)
     } catch (err) {
       setError('Failed to create account')
+    } finally {
       setIsLoading(false)
     }
   }
@@ -102,6 +104,12 @@ export default function SignupPage() {
             </Button>
           </form>
         </CardContent>
+        {showVerification && (
+          <VerificationMessage
+            email={email}
+            onContinue={() => router.push('/auth/login')}
+          />
+        )}
         <CardFooter className="flex flex-col space-y-4 text-center text-sm text-[#001122]">
           <p>
             Already have an account?{' '}
