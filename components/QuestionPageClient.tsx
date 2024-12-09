@@ -5,22 +5,15 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { AlertTriangle, Clock, CheckCircle, XCircle, LogOut } from 'lucide-react'
+import { AlertTriangle, Clock, CheckCircle, XCircle, LogOut, SkipForward, Send } from 'lucide-react'
 import { Question, getProfile, ProfileData } from '@/lib/api'
 import QuestionContent from '@/components/QuestionContent'
 import { SolutionDialog } from '@/components/SolutionDialog'
-import { DotLottieReact } from '@lottiefiles/dotlottie-react'
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 interface QuestionResponse extends Question {
-  q_type: number;
   solution: string;
   solution_image: string | null;
-  options: string;
-  correct_answer: string;
-  ques_number: number;
-  difficulty: string;
-  topic: string;
-  source: string;
 }
 
 async function getQuestion(id: string): Promise<QuestionResponse> {
@@ -220,7 +213,6 @@ export default function QuestionPageClient({ id }: { id: string }) {
     );
   }
 
-
   return (
     <div className="min-h-screen bg-white flex">
       <div className="flex-1 p-6 overflow-y-auto">
@@ -267,11 +259,11 @@ export default function QuestionPageClient({ id }: { id: string }) {
           <div className="space-y-6 flex-grow">
             <Timer />
             <div className="space-y-2">
-              <Button variant="outline" className="w-full justify-start text-[#041E3A]">
+              <Button variant="outline" className="w-full justify-start text-[#041E3A] border-green-500">
                 <CheckCircle className="h-4 w-4 mr-2 text-green-500" />
                 {totalCorrect} correct
               </Button>
-              <Button variant="outline" className="w-full justify-start text-[#041E3A]">
+              <Button variant="outline" className="w-full justify-start text-[#041E3A] border-red-500">
                 <XCircle className="h-4 w-4 mr-2 text-red-500" />
                 {totalIncorrect} incorrect
               </Button>
@@ -287,26 +279,30 @@ export default function QuestionPageClient({ id }: { id: string }) {
             <Button
               variant="outline"
               className="w-full text-[#041E3A]"
-              onClick={handleNext}
-              disabled={isLoading || isSubmitting}
-            >
-              Next
-            </Button>
-            <Button
-              className="w-full bg-[#1C7C54] hover:bg-[#041E3A] text-white"
-              onClick={handleSubmit}
-              disabled={!selectedAnswer || isLoading || isSubmitting}
-            >
-              {isSubmitting ? 'Submitting...' : (submittedAnswer ? 'Resubmit' : 'Submit')}
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full text-[#041E3A]"
               onClick={() => setIsSolutionOpen(true)}
               disabled={isLoading || isSubmitting}
             >
               View Solution
             </Button>
+            <div className="flex space-x-4">
+              <Button
+                variant="outline"
+                className="w-1/2 text-[#041E3A]"
+                onClick={() => router.push(`/questions/${parseInt(id) + 1}`)}
+                disabled={isLoading || isSubmitting}
+              >
+                Next
+                <SkipForward className="ml-2 h-4 w-4" />
+              </Button>
+              <Button
+                className="w-1/2 bg-[#1C7C54] hover:bg-[#041E3A] text-white"
+                onClick={handleSubmit}
+                disabled={!selectedAnswer || isLoading || isSubmitting}
+              >
+                {isSubmitting ? 'Submitting...' : (submittedAnswer ? 'Resubmit' : 'Submit')}
+                <Send className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>

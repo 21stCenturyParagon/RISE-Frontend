@@ -283,16 +283,16 @@ export default function ProfilePage() {
           <h1 className="mt-4 text-3xl font-bold text-[#041E3A]">Your Profile</h1>
         </div>
 
-        <Card className="mb-8 border border-[#bcc8cc]">
+        <Card className="mb-8">
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-              <div className="flex items-center space-x-6 mb-4 md:mb-0">
+              <div className="flex items-center gap-6 mb-4 md:mb-0">
                 <Image
-                  src="https://wallpapers.com/images/hd/placeholder-profile-icon-20tehfawxt5eihco.jpg"
-                  alt="Profile image placeholder"
-                  width={120}
-                  height={40}
-                  className="cursor-pointer"
+                  src="https://pathwayactivities.co.uk/wp-content/uploads/2016/04/Profile_avatar_placeholder_large-circle.png"
+                  alt="Profile picture"
+                  width={80}
+                  height={80}
+                  className="rounded-full"
                 />
                 <div>
                   <h2 className="text-xl font-semibold text-[#041E3A]">{profile.user.name}</h2>
@@ -328,117 +328,121 @@ export default function ProfilePage() {
         </Card>
 
         <div className="space-y-8">
-          <Card className="border border-[#bcc8cc]">
-            <CardContent className="p-6">
-              <h2 className="text-2xl font-bold text-[#041E3A] mb-4">Attempted Questions</h2>
-              <div className="flex flex-wrap gap-4 mb-6">
-                <Select onValueChange={(value) => handleFilterChange('difficulty', value)} disabled={changingPage}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Difficulty" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Difficulties</SelectItem>
-                    {filters?.difficulties.map((difficulty) => (
-                      <SelectItem key={difficulty} value={difficulty}>{difficulty}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+          <div className="p-6">
+            <h2 className="text-2xl font-bold text-[#041E3A] mb-4">Attempted Questions</h2>
+            <div className="flex flex-wrap gap-4 mb-6">
+              <Select onValueChange={(value) => handleFilterChange('difficulty', value)} disabled={changingPage}>
+                <SelectTrigger className="w-[180px] border-none bg-gray-100 px-4 py-2">
+                  <SelectValue placeholder="Difficulty" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Difficulties</SelectItem>
+                  {filters?.difficulties.map((difficulty) => (
+                    <SelectItem key={difficulty} value={difficulty}>{difficulty}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-                <Select onValueChange={(value) => handleFilterChange('topic', value)} disabled={changingPage}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Topic" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Topics</SelectItem>
-                    {filters?.topics.map((topic) => (
-                      <SelectItem key={topic} value={topic}>{topic}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <Select onValueChange={(value) => handleFilterChange('topic', value)} disabled={changingPage}>
+                <SelectTrigger className="w-[180px] border-none bg-gray-100 px-4 py-2">
+                  <SelectValue placeholder="Topic" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Topics</SelectItem>
+                  {filters?.topics.map((topic) => (
+                    <SelectItem key={topic} value={topic}>{topic}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-                <Select onValueChange={(value) => handleFilterChange('source', value)} disabled={changingPage}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Source" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Sources</SelectItem>
-                    {filters?.sources.map((source) => (
-                      <SelectItem key={source} value={source}>{source}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <Select onValueChange={(value) => handleFilterChange('source', value)} disabled={changingPage}>
+                <SelectTrigger className="w-[180px] border-none bg-gray-100 px-4 py-2">
+                  <SelectValue placeholder="Source" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Sources</SelectItem>
+                  {filters?.sources.map((source) => (
+                    <SelectItem key={source} value={source}>{source}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-              {questions && questions.length > 0 ? (
-                <>
-                  <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-4">
-                    <ul className="divide-y divide-[#bcc8cc]">
-                      {questions.map((question) => (
-                        <li key={question.ques_number} className="question-list-item">
-                          <Link href={`/questions/${question.ques_number}`} className="block hover:bg-gray-50 px-4 py-4 sm:px-6">
-                            <div className="flex items-center">
-                              <div className="flex-shrink-0 mr-4">
-                                {getStatusIcon(question.status)}
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-sm font-medium text-[#1C7C54] truncate question-preview">
-                                    {question.ques_number}.{' '}
-                                    <LatexRenderer
-                                      content={question.question}
-                                      className="inline"
-                                      inline={true}
-                                    />
-                                  </span>
-                                  <div className="ml-2 flex-shrink-0 flex">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                      ${question.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
-                                        question.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                                        'bg-red-100 text-red-800'}`}>
-                                      {question.difficulty}
-                                    </span>
-                                  </div>
-                                </div>
-                                <div className="mt-2 sm:flex sm:justify-between">
-                                  <div className="sm:flex">
-                                    <span className="flex items-center text-sm text-[#001122]">
-                                      {question.topic}
-                                    </span>
-                                  </div>
-                                  <div className="mt-2 flex items-center text-sm text-[#001122] sm:mt-0">
-                                    <span>{question.source}</span>
-                                  </div>
-                                </div>
-                              </div>
+            {questions && questions.length > 0 ? (
+              <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-4">
+                <div className="bg-white border-b-2 border-b-[#f6f7f9] px-4 py-3 sm:px-6 flex items-center font-medium text-sm text-gray-500">
+                  <div className="w-16">Status</div>
+                  <div className="flex-1">Question</div>
+                  <div className="w-24 text-center">Difficulty</div>
+                  <div className="w-24 text-center">Source</div>
+                </div>
+                <ul>
+                  {questions.map((question, index) => (
+                    <li
+                      key={question.ques_number}
+                      className={`question-list-item ${index % 2 === 0 ? 'bg-white' : 'bg-[#f7f8fa]'} group`}
+                    >
+                      <Link
+                        href={`/questions/${question.ques_number}`}
+                        className="block px-4 py-4 sm:px-6"
+                      >
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 w-16">
+                            {getStatusIcon(question.status)}
+                          </div>
+                          <div className="min-w-0 flex-1 flex-grow">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-medium text-black group-hover:text-[#1C7C54] transition-colors duration-200 truncate question-preview">
+                                {question.ques_number}.{' '}
+                                <LatexRenderer
+                                  content={question.question}
+                                  className="inline"
+                                  inline={true}
+                                />
+                              </span>
                             </div>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="flex justify-center items-center space-x-2">
-                    <Button
-                      onClick={() => handlePageChange(pagination.page - 1)}
-                      disabled={!pagination.has_previous || changingPage}
-                      className="bg-[#1C7C54] hover:bg-[#041E3A] text-white"
-                    >
-                      Previous
-                    </Button>
-                    {renderPageNumbers()}
-                    <Button
-                      onClick={() => handlePageChange(pagination.page + 1)}
-                      disabled={!pagination.has_next || changingPage}
-                      className="bg-[#1C7C54] hover:bg-[#041E3A] text-white"
-                    >
-                      Next
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <p className="text-[#001122]">No attempted questions available. Try solving some questions to see them here!</p>
-              )}
-            </CardContent>
-          </Card>
+                            <div className="mt-2 text-xs text-gray-500">
+                              {question.topic}
+                            </div>
+                          </div>
+                          <div className="flex-shrink-0 w-24 text-center">
+                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                              ${question.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
+                                question.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-red-100 text-red-800'}`}>
+                              {question.difficulty}
+                            </span>
+                          </div>
+                          <div className="flex-shrink-0 w-24 text-center text-sm text-black">
+                            {question.source}
+                          </div>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="text-[#001122]">No attempted questions available. Try solving some questions to see them here!</p>
+            )}
+            <div className="flex justify-center items-center space-x-2">
+              <Button
+                onClick={() => handlePageChange(pagination.page - 1)}
+                disabled={!pagination.has_previous || changingPage}
+                className="bg-[#1C7C54] hover:bg-[#041E3A] text-white"
+              >
+                Previous
+              </Button>
+              {renderPageNumbers()}
+              <Button
+                onClick={() => handlePageChange(pagination.page + 1)}
+                disabled={!pagination.has_next || changingPage}
+                className="bg-[#1C7C54] hover:bg-[#041E3A] text-white"
+              >
+                Next
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

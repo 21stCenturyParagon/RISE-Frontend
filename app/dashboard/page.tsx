@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CheckCircle, XCircle, BookOpen } from 'lucide-react'
 import { getQuestions, getProfile, getFilters, logoutUser, Question, PaginatedResponse, Filters } from '@/lib/api'
@@ -181,38 +181,32 @@ export default function DashboardPage() {
           </nav>
         </div>
       </header>
+      <div className="border-b border-gray-200 mb-6"></div>
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className={`px-4 py-6 sm:px-0 ${changingPage ? 'opacity-50 pointer-events-none' : ''}`}>
-          <h1 className="text-3xl font-bold text-[#041E3A] mb-6">Welcome {profile?.user.name},</h1>
+          <h1 className="text-3xl font-bold text-[#041E3A] mb-6">Welcome {profile?.user.name}...</h1>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card>
-              <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-2 text-[#041E3A]">TMUA</h2>
-                <p className="text-[#001122] mb-4">Test of Mathematics for University Admission</p>
-                <Button className="w-full bg-[#1C7C54] hover:bg-[#041E3A] text-white">Start Test Series</Button>
-              </CardContent>
+            <Card className="w-[400px] h-[180px] p-8 flex flex-col justify-between bg-gradient-to-r from-[#CFF8E7] to-[#28A772] shadow-[0px_2px_4px_rgba(0,0,0,0.1)] rounded-[6px] border-0">
+              <div className="flex flex-col gap-3">
+                <h2 className="text-[#1C7C54] text-2xl font-bold">TMUA</h2>
+                <p className="text-[#1C7C54] text-sm">Test of Mathematics for University Admission</p>
+              </div>
+              <Button
+                variant="outline"
+                className="w-fit px-6 py-2 mt-4 bg-white border-[#469F6E] text-[#469F6E] hover:bg-white/90 text-sm"
+              >
+                Start Test Series
+              </Button>
             </Card>
           </div>
 
           <h2 className="text-2xl font-bold text-[#041E3A] mb-4">Study Plan</h2>
 
           <div className="flex flex-wrap gap-4 mb-6">
-            <Select onValueChange={(value) => handleFilterChange('difficulty', value)} disabled={changingPage}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Difficulty" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Difficulties</SelectItem>
-                {filters?.difficulties.map((difficulty) => (
-                  <SelectItem key={difficulty} value={difficulty}>{difficulty}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
             <Select onValueChange={(value) => handleFilterChange('topic', value)} disabled={changingPage}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[180px] border-none bg-gray-100 px-4 py-2">
                 <SelectValue placeholder="Topic" />
               </SelectTrigger>
               <SelectContent>
@@ -223,8 +217,20 @@ export default function DashboardPage() {
               </SelectContent>
             </Select>
 
+            <Select onValueChange={(value) => handleFilterChange('difficulty', value)} disabled={changingPage}>
+              <SelectTrigger className="w-[180px] border-none bg-gray-100 px-4 py-2">
+                <SelectValue placeholder="Difficulty" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Difficulties</SelectItem>
+                {filters?.difficulties.map((difficulty) => (
+                  <SelectItem key={difficulty} value={difficulty}>{difficulty}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             <Select onValueChange={(value) => handleFilterChange('source', value)} disabled={changingPage}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[180px] border-none bg-gray-100 px-4 py-2">
                 <SelectValue placeholder="Source" />
               </SelectTrigger>
               <SelectContent>
@@ -236,7 +242,7 @@ export default function DashboardPage() {
             </Select>
 
             <Select onValueChange={(value) => handleFilterChange('status', value)} disabled={changingPage}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[180px] border-none bg-gray-100 px-4 py-2">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -251,17 +257,29 @@ export default function DashboardPage() {
           {questions && questions.length > 0 ? (
             <>
               <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-4">
-                <ul className="divide-y divide-[#bcc8cc]">
-                  {questions.map((question) => (
-                    <li key={question.ques_number} className="question-list-item">
-                      <Link href={`/questions/${question.ques_number}`} className="block hover:bg-gray-50 px-4 py-4 sm:px-6">
+                <div className="bg-white border-b-2 border-b-[#f6f7f9] px-4 py-3 sm:px-6 flex items-center font-medium text-sm text-gray-500">
+                  <div className="w-16">Status</div>
+                  <div className="flex-1">Question</div>
+                  <div className="w-24 text-center">Difficulty</div>
+                  <div className="w-24 text-center">Source</div>
+                </div>
+                <ul>
+                  {questions.map((question, index) => (
+                    <li
+                      key={question.ques_number}
+                      className={`question-list-item ${index % 2 === 0 ? 'bg-white' : 'bg-[#f7f8fa]'} group`}
+                    >
+                      <Link
+                        href={`/questions/${question.ques_number}`}
+                        className="block px-4 py-4 sm:px-6"
+                      >
                         <div className="flex items-center">
-                          <div className="flex-shrink-0 mr-4">
+                          <div className="flex-shrink-0 w-16">
                             {getStatusIcon(question.status)}
                           </div>
-                          <div className="min-w-0 flex-1">
+                          <div className="min-w-0 flex-1 flex-grow">
                             <div className="flex items-center justify-between">
-                              <span className="text-sm font-medium text-[#1C7C54] truncate question-preview">
+                              <span className="text-sm font-medium text-black group-hover:text-[#1C7C54] transition-colors duration-200 truncate question-preview">
                                 {question.ques_number}.{' '}
                                 <LatexRenderer
                                   content={question.question}
@@ -269,25 +287,21 @@ export default function DashboardPage() {
                                   inline={true}
                                 />
                               </span>
-                              <div className="ml-2 flex-shrink-0 flex">
-                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                  ${question.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
-                                    question.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                                    'bg-red-100 text-red-800'}`}>
-                                  {question.difficulty}
-                                </span>
-                              </div>
                             </div>
-                            <div className="mt-2 sm:flex sm:justify-between">
-                              <div className="sm:flex">
-                                <span className="flex items-center text-sm text-[#001122]">
-                                  {question.topic}
-                                </span>
-                              </div>
-                              <div className="mt-2 flex items-center text-sm text-[#001122] sm:mt-0">
-                                <span>{question.source}</span>
-                              </div>
+                            <div className="mt-2 text-xs text-gray-500">
+                              {question.topic}
                             </div>
+                          </div>
+                          <div className="flex-shrink-0 w-24 text-center">
+                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                              ${question.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
+                                question.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-red-100 text-red-800'}`}>
+                              {question.difficulty}
+                            </span>
+                          </div>
+                          <div className="flex-shrink-0 w-24 text-center text-sm text-black">
+                            {question.source}
                           </div>
                         </div>
                       </Link>

@@ -8,7 +8,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'wallpapers.com',
+        hostname: 'pathwayactivities.co.uk',
       },
     ],
   }
