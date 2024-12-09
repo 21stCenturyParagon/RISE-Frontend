@@ -5,7 +5,6 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 // Use the specific Next.js 15 typing
 type PageProps = {
   params: Promise<{ id: string }>
-  searchParams?: { [key: string]: string | string[] | undefined }
 }
 
 export default async function QuestionPage({ params }: PageProps) {
