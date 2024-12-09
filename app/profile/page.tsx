@@ -280,7 +280,7 @@ export default function ProfilePage() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
           </Link>
-          <h1 className="mt-4 text-3xl font-bold text-[#041E3A]">Your Profile</h1>
+          <h1 className="mt-4 text-3xl font-bold text-[#646265]">Your Profile</h1>
         </div>
 
         <Card className="mb-8">
@@ -329,7 +329,7 @@ export default function ProfilePage() {
 
         <div className="space-y-8">
           <div className="p-6">
-            <h2 className="text-2xl font-bold text-[#041E3A] mb-4">Attempted Questions</h2>
+            <h2 className="text-2xl font-bold text-[#646265] mb-4">Attempted Questions</h2>
             <div className="flex flex-wrap gap-4 mb-6">
               <Select onValueChange={(value) => handleFilterChange('difficulty', value)} disabled={changingPage}>
                 <SelectTrigger className="w-[180px] border-none bg-gray-100 px-4 py-2">
@@ -392,7 +392,7 @@ export default function ProfilePage() {
                           </div>
                           <div className="min-w-0 flex-1 flex-grow">
                             <div className="flex items-center justify-between">
-                              <span className="text-sm font-medium text-black group-hover:text-[#1C7C54] transition-colors duration-200 truncate question-preview">
+                              <span className="text-sm font-medium text-[#646265] group-hover:text-[#1C7C54] transition-colors duration-200 truncate question-preview">
                                 {question.ques_number}.{' '}
                                 <LatexRenderer
                                   content={question.question}

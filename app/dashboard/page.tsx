@@ -185,24 +185,24 @@ export default function DashboardPage() {
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className={`px-4 py-6 sm:px-0 ${changingPage ? 'opacity-50 pointer-events-none' : ''}`}>
-          <h1 className="text-3xl font-bold text-[#041E3A] mb-6">Welcome {profile?.user.name}...</h1>
+          <h1 className="text-3xl font-bold text-[#646265] mb-6">Welcome {profile?.user.name}...</h1>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card className="w-[400px] h-[180px] p-8 flex flex-col justify-between bg-gradient-to-r from-[#CFF8E7] to-[#28A772] shadow-[0px_2px_4px_rgba(0,0,0,0.1)] rounded-[6px] border-0">
+            <Card className="w-[400px] h-[200px] p-8 flex flex-col justify-between bg-gradient-to-r from-[#CFF8E7] to-[#28A772] shadow-[0px_2px_4px_rgba(0,0,0,0.1)] rounded-[6px] border-0">
               <div className="flex flex-col gap-3">
                 <h2 className="text-[#1C7C54] text-2xl font-bold">TMUA</h2>
                 <p className="text-[#1C7C54] text-sm">Test of Mathematics for University Admission</p>
               </div>
               <Button
                 variant="outline"
-                className="w-fit px-6 py-2 mt-4 bg-white border-[#469F6E] text-[#469F6E] hover:bg-white/90 text-sm"
+                className="w-fit px-6 py-2 mt-4 bg-white border-[#469F6E] text-[#469F6E] text-sm"
               >
                 Start Test Series
               </Button>
             </Card>
           </div>
 
-          <h2 className="text-2xl font-bold text-[#041E3A] mb-4">Study Plan</h2>
+          <h2 className="text-2xl font-bold text-[#646265] mb-4">Study Plan</h2>
 
           <div className="flex flex-wrap gap-4 mb-6">
             <Select onValueChange={(value) => handleFilterChange('topic', value)} disabled={changingPage}>
@@ -279,7 +279,7 @@ export default function DashboardPage() {
                           </div>
                           <div className="min-w-0 flex-1 flex-grow">
                             <div className="flex items-center justify-between">
-                              <span className="text-sm font-medium text-black group-hover:text-[#1C7C54] transition-colors duration-200 truncate question-preview">
+                              <span className="text-sm font-medium text-[#646265] group-hover:text-[#1C7C54] transition-colors duration-200 truncate question-preview">
                                 {question.ques_number}.{' '}
                                 <LatexRenderer
                                   content={question.question}
