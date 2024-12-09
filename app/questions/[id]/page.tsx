@@ -10,7 +10,7 @@ interface PageProps {
   searchParams: { [key: string]: string | string[] | undefined }
 }
 
-export default async function QuestionPage({ params}: PageProps) {
+export default async function QuestionPage({ params, searchParams }: PageProps) {
   return (
     <Suspense fallback={
       <div className="flex justify-center items-center h-screen">
