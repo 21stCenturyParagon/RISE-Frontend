@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { signupUser } from '@/lib/api'
-import VerificationMessage from '@/components/VerificationMessage'
+import VerificationDialog from '@/components/VerificationDialog'
 
 export default function SignupPage() {
   const [name, setName] = useState('')
@@ -30,6 +30,10 @@ export default function SignupPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleContinueToLogin = () => {
+    router.push('/auth/login')
   }
 
   return (
@@ -104,12 +108,6 @@ export default function SignupPage() {
             </Button>
           </form>
         </CardContent>
-        {showVerification && (
-          <VerificationMessage
-            email={email}
-            onContinue={() => router.push('/auth/login')}
-          />
-        )}
         <CardFooter className="flex flex-col space-y-4 text-center text-sm text-[#001122]">
           <p>
             Already have an account?{' '}
@@ -133,6 +131,12 @@ export default function SignupPage() {
           </div>
         </CardFooter>
       </Card>
+
+      <VerificationDialog
+        isOpen={showVerification}
+        email={email}
+        onContinue={handleContinueToLogin}
+      />
     </div>
   )
 }
