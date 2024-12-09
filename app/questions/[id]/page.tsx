@@ -2,15 +2,16 @@ import { Suspense } from 'react'
 import QuestionPageClient from '@/components/QuestionPageClient'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 
-// Update the params type to match Next.js expectations
-interface PageProps {
-  params: {
-    id: string
-  }
-  searchParams: { [key: string]: string | string[] | undefined }
+// Use the specific Next.js 15 typing
+type PageProps = {
+  params: Promise<{ id: string }>
+  searchParams?: { [key: string]: string | string[] | undefined }
 }
 
-export default async function QuestionPage({ params, searchParams }: PageProps) {
+export default async function QuestionPage({ params }: PageProps) {
+  // Await the params since they're now a Promise
+  const resolvedParams = await params
+
   return (
     <Suspense fallback={
       <div className="flex justify-center items-center h-screen">
@@ -23,7 +24,7 @@ export default async function QuestionPage({ params, searchParams }: PageProps) 
         </div>
       </div>
     }>
-      <QuestionPageClient id={params.id} />
+      <QuestionPageClient id={resolvedParams.id} />
     </Suspense>
   )
 }
