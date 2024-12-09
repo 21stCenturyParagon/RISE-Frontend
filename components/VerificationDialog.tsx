@@ -11,10 +11,10 @@ interface VerificationDialogProps {
 const VerificationDialog: React.FC<VerificationDialogProps> = ({ isOpen, email, onContinue }) => {
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] text-gray-800">
         <DialogHeader>
           <DialogTitle>Verify Your Email</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-gray-700">
             We've sent a verification email to <strong>{email}</strong>.
             Please check your inbox and click the verification link to activate your account.
           </DialogDescription>
