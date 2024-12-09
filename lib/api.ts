@@ -1,6 +1,7 @@
 const BASE_URL = 'https://rise-mks9.onrender.com/api/v1';
 
 export interface Question {
+  q_type: number;
   ques_number: number;
   question: string;
   options: string;
