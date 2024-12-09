@@ -13,7 +13,9 @@ import { LatexRenderer } from '@/components/LatexRenderer'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 interface Profile {
-  name: string;
+  user: {
+    name: string;
+  };
   email: string;
   stats: {
     easy: number;
@@ -73,7 +75,6 @@ export default function DashboardPage() {
           next_page: questionsData.next_page,
           previous_page: questionsData.previous_page,
         })
-        // @ts-ignore
         setProfile(profileData)
         setFilters(filtersData)
       } catch (error) {
@@ -182,7 +183,7 @@ export default function DashboardPage() {
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className={`px-4 py-6 sm:px-0 ${changingPage ? 'opacity-50 pointer-events-none' : ''}`}>
-          <h1 className="text-3xl font-bold text-[#041E3A] mb-6">Welcome, {profile?.name}</h1>
+          <h1 className="text-3xl font-bold text-[#041E3A] mb-6">Welcome {profile?.user.name},</h1>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card>
