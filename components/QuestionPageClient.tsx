@@ -259,12 +259,12 @@ export default function QuestionPageClient({ id }: { id: string }) {
           <div className="space-y-6 flex-grow">
             <Timer />
             <div className="space-y-2">
-              <Button variant="outline" className="w-full justify-start text-[#041E3A] border-green-500">
+              <Button variant="outline" className="w-full justify-start text-[#1C7C54] border-[#1C7C54] hover:bg-transparent hover:text-[#1C7C54] hover:border-[#1C7C54]">
                 <CheckCircle className="h-4 w-4 mr-2 text-green-500" />
                 {totalCorrect} correct
               </Button>
-              <Button variant="outline" className="w-full justify-start text-[#041E3A] border-red-500">
-                <XCircle className="h-4 w-4 mr-2 text-red-500" />
+              <Button variant="outline" className="w-full justify-start text-[#AD3E3E] border-[#AD3E3E] hover:bg-transparent hover:text-[#AD3E3E] hover:border-[#AD3E3E]">
+                <XCircle className="h-4 w-4 mr-2 text-[#AD3E3E]" />
                 {totalIncorrect} incorrect
               </Button>
             </div>
