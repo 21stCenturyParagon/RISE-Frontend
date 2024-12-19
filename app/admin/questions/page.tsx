@@ -31,7 +31,7 @@ interface Question {
   q_type: number;
 }
 
-async function createQuestion(question: Omit<Question, 'ques_number' | 'image' | 'status'>): Promise<Question> {
+async function createQuestion(question: Omit<Question, 'image' | 'status'>): Promise<Question> {
   const token = localStorage.getItem('token');
   if (!token) {
     throw new Error('No authentication token found');
@@ -94,11 +94,12 @@ export default function AllQuestionsPage() {
     source: '',
   })
   const [isNewQuestionDialogOpen, setIsNewQuestionDialogOpen] = useState(false)
-  const [newQuestion, setNewQuestion] = useState<Omit<Question, 'ques_number' | 'image' | 'status'>>({
+  const [newQuestion, setNewQuestion] = useState<Omit<Question, 'image' | 'status'>>({
+    ques_number: 0,
     question: '',
     options: '',
     topic: '',
-    difficulty: 'easy',
+    difficulty: 'Easy',
     source: '',
     correct_answer: '',
     solution: '',
@@ -169,10 +170,11 @@ export default function AllQuestionsPage() {
       await fetchQuestions()
       setIsNewQuestionDialogOpen(false)
       setNewQuestion({
+        ques_number: 0,
         question: '',
         options: '',
         topic: '',
-        difficulty: 'easy',
+        difficulty: 'Easy',
         source: '',
         correct_answer: '',
         solution: '',
@@ -369,6 +371,13 @@ export default function AllQuestionsPage() {
               <DialogTitle>Create New Question</DialogTitle>
             </DialogHeader>
             <div className="mt-4 space-y-4">
+              <Input
+                type="number"
+                placeholder="Enter question number"
+                value={newQuestion.ques_number}
+                onChange={(e) => setNewQuestion({ ...newQuestion, ques_number: parseInt(e.target.value) })}
+                required
+              />
               <Textarea
                 placeholder="Enter question text"
                 value={newQuestion.question}
@@ -386,7 +395,7 @@ export default function AllQuestionsPage() {
               />
               <Select
                 value={newQuestion.difficulty}
-                onValueChange={(value) => setNewQuestion({ ...newQuestion, difficulty: value as 'easy' | 'medium' | 'hard' })}
+                onValueChange={(value) => setNewQuestion({ ...newQuestion, difficulty: value as 'Easy' | 'Medium' | 'Hard' })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select difficulty" />
