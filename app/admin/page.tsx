@@ -179,7 +179,7 @@ export default function AdminPage() {
               </div>
               <Button
                 variant="outline"
-                className="w-fit px-6 py-2 mt-2 bg-white border-[#469F6E] text-[#469F6E] hover:bg-white/90 text-sm"
+                className="w-fit px-6 py-2 mt-2 bg-white border-[#469F6E] text-[#469F6E] hover:border-[#469F6E] hover:text-white text-sm"
                 onClick={() => router.push(`/admin/test-series/${series.id}`)}
               >
                 Edit

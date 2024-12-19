@@ -93,7 +93,6 @@ function Timer() {
 
 export default function QuestionPageClient({ id }: { id: string }) {
   const [question, setQuestion] = useState<QuestionResponse | null>(null)
-  const [parsedOptions, setParsedOptions] = useState<string[]>([])
   const [selectedAnswer, setSelectedAnswer] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -130,13 +129,6 @@ export default function QuestionPageClient({ id }: { id: string }) {
         ])
         setQuestion(questionData)
         setProfileData(profileData)
-        if (questionData.q_type !== 2) {
-          setParsedOptions(
-            questionData.options.split('\n')
-              .map(option => option.trim())
-              .filter(option => option.length > 0)
-          )
-        }
         setSelectedAnswer('')
         setSubmittedAnswer(null)
         setIsAnswerCorrect(null)
@@ -154,7 +146,7 @@ export default function QuestionPageClient({ id }: { id: string }) {
   const handleSubmit = useCallback(async () => {
     if (!selectedAnswer || !question) return;
 
-    const optionIndex = parsedOptions.findIndex(option => option === selectedAnswer);
+    const optionIndex = question.options.split('\n').map(option => option.trim()).filter(option => option.length > 0).findIndex(option => option === selectedAnswer);
     const selectedOption = String.fromCharCode(65 + optionIndex);
     const isCorrect = selectedOption === question.correct_answer;
 
@@ -170,7 +162,7 @@ export default function QuestionPageClient({ id }: { id: string }) {
     } finally {
       setIsSubmitting(false)
     }
-  }, [selectedAnswer, question, parsedOptions, time, fetchProfileData])
+  }, [selectedAnswer, question, time, fetchProfileData])
 
   const handleSelectAnswer = useCallback((answer: string) => {
     setSelectedAnswer(answer)
@@ -245,7 +237,6 @@ export default function QuestionPageClient({ id }: { id: string }) {
 
         <QuestionContent
           question={question}
-          parsedOptions={parsedOptions}
           selectedAnswer={selectedAnswer}
           onSelectAnswer={handleSelectAnswer}
           submittedAnswer={submittedAnswer}
@@ -259,12 +250,12 @@ export default function QuestionPageClient({ id }: { id: string }) {
           <div className="space-y-6 flex-grow">
             <Timer />
             <div className="space-y-2">
-              <Button variant="outline" className="w-full justify-start text-[#1C7C54] border-[#1C7C54] hover:bg-transparent hover:text-[#1C7C54] hover:border-[#1C7C54]">
+              <Button variant="outline" className="w-full justify-start text-[#041E3A] border-green-500">
                 <CheckCircle className="h-4 w-4 mr-2 text-green-500" />
                 {totalCorrect} correct
               </Button>
-              <Button variant="outline" className="w-full justify-start text-[#AD3E3E] border-[#AD3E3E] hover:bg-transparent hover:text-[#AD3E3E] hover:border-[#AD3E3E]">
-                <XCircle className="h-4 w-4 mr-2 text-[#AD3E3E]" />
+              <Button variant="outline" className="w-full justify-start text-[#041E3A] border-red-500">
+                <XCircle className="h-4 w-4 mr-2 text-red-500" />
                 {totalIncorrect} incorrect
               </Button>
             </div>
@@ -291,7 +282,7 @@ export default function QuestionPageClient({ id }: { id: string }) {
                 onClick={() => router.push(`/questions/${parseInt(id) + 1}`)}
                 disabled={isLoading || isSubmitting}
               >
-                Next
+                Skip
                 <SkipForward className="ml-2 h-4 w-4" />
               </Button>
               <Button

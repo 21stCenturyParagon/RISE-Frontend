@@ -1,7 +1,6 @@
 const BASE_URL = 'https://rise-mks9.onrender.com/api/v1';
 
 export interface Question {
-  q_type: number;
   ques_number: number;
   question: string;
   options: string;
@@ -12,6 +11,7 @@ export interface Question {
   status: string;
   correct_answer: string;
   explanation: string;
+  q_type: number; // Add this line
 }
 
 export interface PaginatedResponse<T> {
@@ -41,6 +41,7 @@ export async function loginUser(email: string, password: string) {
 
   const data = await response.json();
   localStorage.setItem('token', data.access_token);
+  localStorage.setItem('user', JSON.stringify(data.user));
   return data;
 }
 
@@ -193,5 +194,33 @@ export async function getProfile(): Promise<ProfileData> {
 export function logoutUser() {
   localStorage.removeItem('token');
   document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
+export function getCurrentUser() {
+  const userString = localStorage.getItem('user');
+  return userString ? JSON.parse(userString) : null;
+}
+
+export interface TestSeries {
+  // Define the structure of a TestSeries object here
+}
+
+export async function getTestSeries(): Promise<TestSeries[]> {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    throw new Error('No authentication token found');
+  }
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/test-series`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch test series');
+  }
+
+  return response.json();
 }
 
