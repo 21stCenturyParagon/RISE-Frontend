@@ -12,6 +12,8 @@ import { getQuestions, getProfile, getFilters, Question, PaginatedResponse, Filt
 import { Progress } from "@/components/ui/progress"
 import { LatexRenderer } from '@/components/LatexRenderer'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { logoutUser, getCurrentUser } from '@/lib/api'
+import AdminCenterButton from '@/components/AdminCenterButton'
 
 interface Profile {
   user: {
@@ -157,6 +159,7 @@ export default function ProfilePage() {
     source: '',
     status: 'correct,incorrect',
   })
+  const [currentUser, setCurrentUser] = useState<{ role: string } | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -200,6 +203,11 @@ export default function ProfilePage() {
 
     fetchData()
   }, [router, pagination.page, pagination.size, selectedFilters])
+
+  useEffect(() => {
+    const user = getCurrentUser()
+    setCurrentUser(user)
+  }, [])
 
   const handlePageChange = (newPage: number) => {
     setPagination(prev => ({ ...prev, page: newPage }))
@@ -270,8 +278,34 @@ export default function ProfilePage() {
   const totalQuestions = profile.stats.easy.total + profile.stats.medium.total + profile.stats.hard.total;
 
   return (
-    <div className="min-h-screen bg-white py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white">
+      <header className="bg-white shadow border-b border-[#bcc8cc]">
+        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+          <Link href="/dashboard">
+            <Image
+              src="https://framerusercontent.com/images/q2DtVdC1E9IpHsCozasAYSAAlY.png"
+              alt="RISE Logo"
+              width={120}
+              height={40}
+              className="h-10 w-auto cursor-pointer"
+              priority
+            />
+          </Link>
+          <nav className="flex items-center space-x-4">
+            <Link href="/dashboard" className="text-[#041E3A] hover:text-[#001122]">Dashboard</Link>
+            {currentUser && (currentUser.role === 'admin' || currentUser.role === 'teacher') && (
+              <AdminCenterButton />
+            )}
+            <Button variant="outline" onClick={() => {
+              logoutUser();
+              router.push('/auth/login');
+            }}>
+              Logout
+            </Button>
+          </nav>
+        </div>
+      </header>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <Link
             href="/dashboard"
@@ -280,7 +314,7 @@ export default function ProfilePage() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
           </Link>
-          <h1 className="mt-4 text-3xl font-bold text-[#646265]">Your Profile</h1>
+          <h1 className="mt-4 text-3xl font-bold text-[#041E3A]">Your Profile</h1>
         </div>
 
         <Card className="mb-8">
@@ -329,7 +363,7 @@ export default function ProfilePage() {
 
         <div className="space-y-8">
           <div className="p-6">
-            <h2 className="text-2xl font-bold text-[#646265] mb-4">Attempted Questions</h2>
+            <h2 className="text-2xl font-bold text-[#041E3A] mb-4">Attempted Questions</h2>
             <div className="flex flex-wrap gap-4 mb-6">
               <Select onValueChange={(value) => handleFilterChange('difficulty', value)} disabled={changingPage}>
                 <SelectTrigger className="w-[180px] border-none bg-gray-100 px-4 py-2">
@@ -392,7 +426,7 @@ export default function ProfilePage() {
                           </div>
                           <div className="min-w-0 flex-1 flex-grow">
                             <div className="flex items-center justify-between">
-                              <span className="text-sm font-medium text-[#646265] group-hover:text-[#1C7C54] transition-colors duration-200 truncate question-preview">
+                              <span className="text-sm font-medium text-black group-hover:text-[#1C7C54] transition-colors duration-200 truncate question-preview">
                                 {question.ques_number}.{' '}
                                 <LatexRenderer
                                   content={question.question}
