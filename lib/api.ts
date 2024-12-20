@@ -1,4 +1,5 @@
-const BASE_URL = 'https://rise-mks9.onrender.com/api/v1';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://21stcenturyparagon9836-ogyjbrn1.leapcell.dev/api/v1/';
+
 
 export interface Question {
   ques_number: number;
