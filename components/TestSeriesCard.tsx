@@ -1,8 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-
+import { Card, CardContent } from "@/components/ui/card";
 import { ClipboardList } from 'lucide-react';
-import {Card, CardContent} from "@/components/ui/card";
 
 interface TestSeries {
   id: number;
@@ -16,7 +15,7 @@ interface TestSeriesCardProps {
 const TestSeriesCard: React.FC<TestSeriesCardProps> = ({ series }) => {
   return (
     <Link href={`/test-series/${series.id}?title=${encodeURIComponent(series.title)}`}>
-      <Card className="h-24 hover:shadow-md transition-shadow duration-200">
+      <Card className="h-24 shadow-md transition-shadow duration-200 border-0">
         <CardContent className="flex items-center h-full p-4">
           <div className="flex items-center w-full">
             <ClipboardList className="w-8 h-8 text-[#1C7C54] mr-4 flex-shrink-0" />
