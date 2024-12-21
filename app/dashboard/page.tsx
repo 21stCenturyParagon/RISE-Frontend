@@ -219,7 +219,7 @@ export default function DashboardPage() {
               </div>
               <Button
                 variant="outline"
-                className="w-fit px-6 py-2 mt-4 bg-white border-[#469F6E] text-[#469F6E] hover:bg-white/90 text-sm"
+                className="w-fit px-6 py-2 mt-4 bg-white border-[#469F6E] text-[#469F6E] hover:border-[#469F6E] hover:text-white text-sm"
               >
                 Start Test Series
               </Button>
