@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://21stcenturyparagon9836-ogyjbrn1.leapcell.dev/api/v1/';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://21stcenturyparagon9836-ogyjbrn1.leapcell.dev/api/v1';
 
 
 export interface Question {
@@ -12,7 +12,7 @@ export interface Question {
   status: string;
   correct_answer: string;
   explanation: string;
-  q_type: number; // Add this line
+  q_type: number;
 }
 
 export interface PaginatedResponse<T> {

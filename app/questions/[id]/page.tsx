@@ -8,7 +8,6 @@ type PageProps = {
 }
 
 export default async function QuestionPage({ params }: PageProps) {
-  // Await the params since they're now a Promise
   const resolvedParams = await params
 
   return (

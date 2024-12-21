@@ -1,51 +1,62 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import Image from 'next/image'
+import {useState, useEffect, use} from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CheckCircle, XCircle, BookOpen } from 'lucide-react'
-import { getQuestions, getProfile, getFilters, logoutUser, Question, PaginatedResponse, Filters, getCurrentUser, ProfileData } from '@/lib/api'
-import { LatexRenderer } from '@/components/LatexRenderer'
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { ArrowLeft, CheckCircle, XCircle, BookOpen } from 'lucide-react'
+import { logoutUser, getCurrentUser } from '@/lib/api'
+import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 import AdminCenterButton from '@/components/AdminCenterButton'
-import TestSeriesCard from '@/components/TestSeriesCard'
+import { LatexRenderer } from '@/components/LatexRenderer'
 
-type Profile = ProfileData;
-
-interface TestSeries {
-  id: number;
-  title: string;
+interface Question {
+  ques_number: number;
+  question: string;
+  topic: string;
+  difficulty: string;
+  source: string;
+  status: string;
 }
 
-async function getTestSeries(): Promise<TestSeries[]> {
+interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  page: number;
+  size: number;
+  total_pages: number;
+  has_next: boolean;
+  has_previous: boolean;
+  next_page: number | null;
+  previous_page: number | null;
+}
+
+async function getTestSeriesQuestions(id: string, page: number, size: number): Promise<PaginatedResponse<Question>> {
   const token = localStorage.getItem('token');
   if (!token) {
     throw new Error('No authentication token found');
   }
 
-  const response = await fetch('https://rise-mks9.onrender.com/api/v1/admin/test-series', {
+  const response = await fetch(`https://rise-mks9.onrender.com/api/v1/admin/test-series/${id}/questions?page=${page}&size=${size}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
   if (!response.ok) {
-    throw new Error('Failed to fetch test series');
+    throw new Error('Failed to fetch test series questions');
   }
 
   return response.json();
 }
 
-export default function DashboardPage() {
+export default function TestSeriesPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params)
   const [questions, setQuestions] = useState<Question[]>([])
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [filters, setFilters] = useState<Filters | null>(null)
   const [loading, setLoading] = useState(true)
-  const [changingPage, setChangingPage] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [currentUser, setCurrentUser] = useState<{ role: string } | null>(null)
   const [pagination, setPagination] = useState<Omit<PaginatedResponse<Question>, 'items'>>({
     total: 0,
     page: 1,
@@ -56,14 +67,8 @@ export default function DashboardPage() {
     next_page: null,
     previous_page: null,
   })
-  const [selectedFilters, setSelectedFilters] = useState({
-    difficulty: '',
-    topic: '',
-    source: '',
-    status: '',
-  })
-  const [currentUser, setCurrentUser] = useState<{ role: string } | null>(null)
-  const [testSeries, setTestSeries] = useState<TestSeries[]>([])
+  const searchParams = useSearchParams()
+  const [testSeriesTitle, setTestSeriesTitle] = useState<string>(searchParams.get('title') || 'Test Series')
   const router = useRouter()
 
   useEffect(() => {
@@ -78,13 +83,7 @@ export default function DashboardPage() {
 
     async function fetchData() {
       try {
-        setChangingPage(true)
-        const [questionsData, profileData, filtersData, testSeriesData] = await Promise.all([
-          getQuestions(pagination.page, pagination.size, selectedFilters),
-          getProfile(),
-          getFilters(),
-          getTestSeries(),
-        ])
+        const questionsData = await getTestSeriesQuestions(resolvedParams.id, pagination.page, pagination.size)
         setQuestions(questionsData.items)
         setPagination({
           total: questionsData.total,
@@ -96,33 +95,19 @@ export default function DashboardPage() {
           next_page: questionsData.next_page,
           previous_page: questionsData.previous_page,
         })
-        setProfile(profileData)
-        setFilters(filtersData)
-        setTestSeries(testSeriesData)
       } catch (error) {
         console.error('Failed to fetch data:', error)
-        if (error instanceof Error && error.message === 'No authentication token found') {
-          router.push('/auth/login')
-        }
+        setError('Failed to load test series questions. Please try again.')
       } finally {
         setLoading(false)
-        setChangingPage(false)
       }
     }
 
     fetchData()
-  }, [router, pagination.page, pagination.size, selectedFilters])
+  }, [router, resolvedParams.id, pagination.page, pagination.size])
 
   const handlePageChange = (newPage: number) => {
     setPagination(prev => ({ ...prev, page: newPage }))
-  }
-
-  const handleFilterChange = (filterType: string, value: string) => {
-    setSelectedFilters(prev => ({
-      ...prev,
-      [filterType]: value === 'all' ? '' : value
-    }))
-    setPagination(prev => ({ ...prev, page: 1 }))
   }
 
   const getStatusIcon = (status: string) => {
@@ -153,7 +138,6 @@ export default function DashboardPage() {
           variant={i === pagination.page ? "default" : "outline"}
           onClick={() => handlePageChange(i)}
           className="mx-1"
-          disabled={changingPage}
         >
           {i}
         </Button>
@@ -177,6 +161,14 @@ export default function DashboardPage() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-red-500">{error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <header className="bg-white shadow border-b border-[#bcc8cc]">
@@ -192,6 +184,7 @@ export default function DashboardPage() {
             />
           </Link>
           <nav className="flex items-center space-x-4">
+            <Link href="/dashboard" className="text-[#041E3A] hover:text-[#001122]">Dashboard</Link>
             <Link href="/profile" className="text-[#041E3A] hover:text-[#001122]">Profile</Link>
             {currentUser && (currentUser.role === 'admin' || currentUser.role === 'teacher') && (
               <AdminCenterButton />
@@ -205,82 +198,17 @@ export default function DashboardPage() {
           </nav>
         </div>
       </header>
-      <div className="border-b border-gray-200 mb-6"></div>
-
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className={`px-4 py-6 sm:px-0 ${changingPage ? 'opacity-50 pointer-events-none' : ''}`}>
-          <h1 className="text-3xl font-bold text-[#041E3A] mb-6">Welcome {profile?.user.name}...</h1>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card className="w-[400px] h-[180px] p-8 flex flex-col justify-between bg-gradient-to-r from-[#CFF8E7] to-[#28A772] shadow-[0px_2px_4px_rgba(0,0,0,0.1)] rounded-[6px] border-0">
-              <div className="flex flex-col gap-3">
-                <h2 className="text-[#1C7C54] text-2xl font-bold">TMUA</h2>
-                <p className="text-[#1C7C54] text-sm">Test of Mathematics for University Admission</p>
-              </div>
-              <Button
-                variant="outline"
-                className="w-fit px-6 py-2 mt-4 bg-white border-[#469F6E] text-[#469F6E] hover:bg-white/90 text-sm"
-              >
-                Start Test Series
-              </Button>
-            </Card>
-          </div>
-
-          <h2 className="text-2xl font-bold text-[#041E3A] mb-4">Study Plan</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
-            {testSeries.map((series) => (
-              <TestSeriesCard key={series.id} series={series} />
-            ))}
-          </div>
-
-          <div className="flex flex-wrap gap-4 mb-6">
-            <Select onValueChange={(value) => handleFilterChange('topic', value)} disabled={changingPage}>
-              <SelectTrigger className="w-[180px] border-none bg-gray-100 px-4 py-2">
-                <SelectValue placeholder="Topic" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Topics</SelectItem>
-                {filters?.topics.map((topic) => (
-                  <SelectItem key={topic} value={topic}>{topic}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select onValueChange={(value) => handleFilterChange('difficulty', value)} disabled={changingPage}>
-              <SelectTrigger className="w-[180px] border-none bg-gray-100 px-4 py-2">
-                <SelectValue placeholder="Difficulty" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Difficulties</SelectItem>
-                {filters?.difficulties.map((difficulty) => (
-                  <SelectItem key={difficulty} value={difficulty}>{difficulty}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select onValueChange={(value) => handleFilterChange('source', value)} disabled={changingPage}>
-              <SelectTrigger className="w-[180px] border-none bg-gray-100 px-4 py-2">
-                <SelectValue placeholder="Source" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Sources</SelectItem>
-                {filters?.sources.map((source) => (
-                  <SelectItem key={source} value={source}>{source}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select onValueChange={(value) => handleFilterChange('status', value)} disabled={changingPage}>
-              <SelectTrigger className="w-[180px] border-none bg-gray-100 px-4 py-2">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="correct">Correct</SelectItem>
-                <SelectItem value="incorrect">Incorrect</SelectItem>
-                <SelectItem value="unattempted">Unattempted</SelectItem>
-              </SelectContent>
-            </Select>
+        <div className="px-4 py-6 sm:px-0">
+          <div className="mb-6">
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center text-sm text-[#041E3A] hover:text-[#001122]"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Dashboard
+            </Link>
+            <h1 className="text-3xl font-bold text-[#041E3A] mt-4">{testSeriesTitle}</h1>
           </div>
 
           {questions && questions.length > 0 ? (
@@ -341,7 +269,7 @@ export default function DashboardPage() {
               <div className="flex justify-center items-center space-x-2">
                 <Button
                   onClick={() => handlePageChange(pagination.page - 1)}
-                  disabled={!pagination.has_previous || changingPage}
+                  disabled={!pagination.has_previous}
                   className="bg-[#1C7C54] hover:bg-[#041E3A] text-white"
                 >
                   Previous
@@ -349,7 +277,7 @@ export default function DashboardPage() {
                 {renderPageNumbers()}
                 <Button
                   onClick={() => handlePageChange(pagination.page + 1)}
-                  disabled={!pagination.has_next || changingPage}
+                  disabled={!pagination.has_next}
                   className="bg-[#1C7C54] hover:bg-[#041E3A] text-white"
                 >
                   Next
@@ -357,7 +285,7 @@ export default function DashboardPage() {
               </div>
             </>
           ) : (
-            <p className="text-[#001122]">No questions available at the moment.</p>
+            <p className="text-[#001122]">No questions available for this test series at the moment.</p>
           )}
         </div>
       </main>
