@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
@@ -10,10 +10,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react'
-// @ts-ignore
-import { getCurrentUser, getQuestions, getFilters, Question, PaginatedResponse, Filters, logoutUser } from '@/lib/api'
+import { getCurrentUser, getQuestions, getFilters, Question, PaginatedResponse, Filters, logoutUser, getQuestionCount, bulkImportQuestions } from '@/lib/api'
 import { LatexRenderer } from '@/components/LatexRenderer'
 import Image from 'next/image'
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -94,8 +94,7 @@ export default function AllQuestionsPage() {
     source: '',
   })
   const [isNewQuestionDialogOpen, setIsNewQuestionDialogOpen] = useState(false)
-  const [newQuestion, setNewQuestion] = useState<Omit<Question, 'image' | 'status'>>({
-    ques_number: 0,
+  const [newQuestion, setNewQuestion] = useState<Omit<Question, 'image' | 'status' | 'ques_number'>>({
     question: '',
     options: '',
     topic: '',
@@ -105,6 +104,9 @@ export default function AllQuestionsPage() {
     solution: '',
     q_type: 1,
   })
+  const [isBulkImportDialogOpen, setIsBulkImportDialogOpen] = useState(false)
+  const [bulkImportResponse, setBulkImportResponse] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -122,7 +124,6 @@ export default function AllQuestionsPage() {
     try {
       setLoading(true)
       const data = await getQuestions(pagination.page, pagination.size, selectedFilters)
-      // @ts-ignore
       setQuestions(data.items)
       setPagination({
         total: data.total,
@@ -166,11 +167,18 @@ export default function AllQuestionsPage() {
 
   const handleCreateQuestion = async () => {
     try {
-      await createQuestion(newQuestion)
-      await fetchQuestions()
-      setIsNewQuestionDialogOpen(false)
+      const questionCount = await getQuestionCount();
+      const newQuestionNumber = questionCount + 1;
+
+      const questionWithNumber = {
+        ...newQuestion,
+        ques_number: newQuestionNumber,
+      };
+
+      await createQuestion(questionWithNumber);
+      await fetchQuestions();
+      setIsNewQuestionDialogOpen(false);
       setNewQuestion({
-        ques_number: 0,
         question: '',
         options: '',
         topic: '',
@@ -179,7 +187,7 @@ export default function AllQuestionsPage() {
         correct_answer: '',
         solution: '',
         q_type: 1,
-      })
+      });
     } catch (error) {
       console.error('Failed to create question:', error)
       setError('Failed to create question. Please try again.')
@@ -193,6 +201,22 @@ export default function AllQuestionsPage() {
     } catch (error) {
       console.error('Failed to delete question:', error)
       setError('Failed to delete question. Please try again.')
+    }
+  }
+
+  const handleBulkImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      try {
+        const response = await bulkImportQuestions(file)
+        setBulkImportResponse(response.message)
+        await fetchQuestions() // Refresh the questions list
+      } catch (error) {
+        console.error('Failed to bulk import questions:', error)
+        setBulkImportResponse('Failed to bulk import questions. Please try again.')
+      } finally {
+        setIsBulkImportDialogOpen(true)
+      }
     }
   }
 
@@ -219,8 +243,8 @@ export default function AllQuestionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="bg-white shadow border-b border-[#bcc8cc] mb-8">
+    <div className="min-h-screen bg-white py-4">
+      <header className="bg-white shadow border-b border-[#bcc8cc] mb-4">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <Link href="/dashboard">
             <Image
@@ -246,7 +270,7 @@ export default function AllQuestionsPage() {
         </div>
       </header>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
+        <div className="mb-4">
           <Link
             href="/admin"
             className="inline-flex items-center text-sm text-[#041E3A] hover:text-[#001122]"
@@ -295,9 +319,21 @@ export default function AllQuestionsPage() {
               </SelectContent>
             </Select>
           </div>
-          <Button className="bg-[#1C7C54] hover:bg-[#041E3A] text-white" onClick={() => setIsNewQuestionDialogOpen(true)}>
-            <Plus className="w-4 h-4 mr-2" /> Add New Question
-          </Button>
+          <div className="flex space-x-2">
+            <Button className="bg-[#1C7C54] hover:bg-[#041E3A] text-white" onClick={() => setIsNewQuestionDialogOpen(true)}>
+              <Plus className="w-4 h-4 mr-2" /> Add New Question
+            </Button>
+            <Button className="bg-[#1C7C54] hover:bg-[#041E3A] text-white" onClick={() => fileInputRef.current?.click()}>
+              <Plus className="w-4 h-4 mr-2" /> Bulk Import CSV
+            </Button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept=".csv"
+              onChange={handleBulkImport}
+            />
+          </div>
         </div>
 
         <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-4">
@@ -371,13 +407,6 @@ export default function AllQuestionsPage() {
               <DialogTitle>Create New Question</DialogTitle>
             </DialogHeader>
             <div className="mt-4 space-y-4">
-              <Input
-                type="number"
-                placeholder="Enter question number"
-                value={newQuestion.ques_number}
-                onChange={(e) => setNewQuestion({ ...newQuestion, ques_number: parseInt(e.target.value) })}
-                required
-              />
               <Textarea
                 placeholder="Enter question text"
                 value={newQuestion.question}
@@ -437,6 +466,19 @@ export default function AllQuestionsPage() {
             </div>
           </DialogContent>
         </Dialog>
+        <AlertDialog open={isBulkImportDialogOpen} onOpenChange={setIsBulkImportDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Bulk Import Result</AlertDialogTitle>
+              <AlertDialogDescription>
+                {bulkImportResponse}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction onClick={() => setIsBulkImportDialogOpen(false)}>OK</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   )

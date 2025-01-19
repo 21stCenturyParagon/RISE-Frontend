@@ -1,5 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://21stcenturyparagon9836-ogyjbrn1.leapcell.dev/api/v1';
-
+const BASE_URL = 'https://rise-mks9.onrender.com/api/v1';
 
 export interface Question {
   ques_number: number;
@@ -12,7 +11,7 @@ export interface Question {
   status: string;
   correct_answer: string;
   explanation: string;
-  q_type: number;
+  q_type: number; // Add this line
 }
 
 export interface PaginatedResponse<T> {
@@ -220,6 +219,79 @@ export async function getTestSeries(): Promise<TestSeries[]> {
 
   if (!response.ok) {
     throw new Error('Failed to fetch test series');
+  }
+
+  return response.json();
+}
+
+export async function getNextFilteredQuestion(currentId: string, filters: Record<string, string>): Promise<Question | null> {
+  const questionOrder = JSON.parse(localStorage.getItem('questionOrder') || '[]');
+  const currentIndex = questionOrder.indexOf(parseInt(currentId));
+  if (currentIndex < questionOrder.length - 1) {
+    const nextQuestionId = questionOrder[currentIndex + 1];
+    return getQuestion(nextQuestionId.toString());
+  }
+  return null;
+}
+
+export async function getQuestion(id: string): Promise<Question> {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    throw new Error('No authentication token found');
+  }
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/questions/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch question');
+  }
+
+  return response.json();
+}
+
+export async function getQuestionCount(): Promise<number> {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    throw new Error('No authentication token found');
+  }
+
+  const response = await fetch(`${BASE_URL}/questions/count`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch question count');
+  }
+
+  const data = await response.json();
+  return data.total;
+}
+
+export async function bulkImportQuestions(file: File): Promise<{ message: string }> {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    throw new Error('No authentication token found');
+  }
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch(`${BASE_URL}/admin/bulk-import-csv`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to bulk import questions');
   }
 
   return response.json();
