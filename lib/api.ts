@@ -10,7 +10,7 @@ export interface Question {
   image: string;
   status: string;
   correct_answer: string;
-  explanation: string;
+  solution: string;
   q_type: number; // Add this line
 }
 

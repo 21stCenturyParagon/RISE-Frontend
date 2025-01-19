@@ -17,20 +17,6 @@ import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescript
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-interface Question {
-  ques_number: number;
-  question: string;
-  options: string;
-  topic: string;
-  difficulty: string;
-  source: string;
-  image: string;
-  status: string;
-  correct_answer: string;
-  solution: string;
-  q_type: number;
-}
-
 async function createQuestion(question: Omit<Question, 'image' | 'status'>): Promise<Question> {
   const token = localStorage.getItem('token');
   if (!token) {
@@ -124,6 +110,7 @@ export default function AllQuestionsPage() {
     try {
       setLoading(true)
       const data = await getQuestions(pagination.page, pagination.size, selectedFilters)
+      // @ts-ignore
       setQuestions(data.items)
       setPagination({
         total: data.total,
